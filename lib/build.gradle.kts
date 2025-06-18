@@ -34,12 +34,12 @@ gitVersioning.apply {
 }
 
 kotlin {
-    jvmToolchain(22)
+    jvmToolchain(23)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_22
-    targetCompatibility = JavaVersion.VERSION_22
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
 }
 
 dependencies {
@@ -55,28 +55,28 @@ dependencies {
     testImplementation(libs.slf4j.simple)
 }
 
-val readMeToDocIndexTask = tasks.register<Copy>("readmeToDocIndex") {
-    group = "dokka"
-    val inputFile = layout.projectDirectory.file("../README.md")
-    from(inputFile)
-    into(layout.buildDirectory.dir("generated-doc"))
-    filter { line ->
-        if (line.startsWith("Documentation is available on")) {
-            ""
-        } else {
-            line
-                .replace(
-                    "# A Kotlin Compose library for Gtk4 and Adw",
-                    "# Module Compose 4 GTK",
-                )
-                .replace(
-                    "](examples/",
-                    "](https://github.com/compose4gtk/compose-4-gtk/blob/main/examples/",
-                )
+val readMeToDocIndexTask =
+    tasks.register<Copy>("readmeToDocIndex") {
+        group = "dokka"
+        val inputFile = layout.projectDirectory.file("../README.md")
+        from(inputFile)
+        into(layout.buildDirectory.dir("generated-doc"))
+        filter { line ->
+            if (line.startsWith("Documentation is available on")) {
+                ""
+            } else {
+                line
+                    .replace(
+                        "# A Kotlin Compose library for Gtk4 and Adw",
+                        "# Module Compose 4 GTK",
+                    ).replace(
+                        "](examples/",
+                        "](https://github.com/compose4gtk/compose-4-gtk/blob/main/examples/",
+                    )
+            }
         }
+        rename { "main.md" }
     }
-    rename { "main.md" }
-}
 
 tasks.named("dokkaGeneratePublicationHtml") {
     dependsOn.add(readMeToDocIndexTask)
@@ -205,3 +205,4 @@ detekt {
     config.setFrom(file("../config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
+
